@@ -26,8 +26,9 @@
 
         <div v-if="state === 'edit'" class="flex items-center justify-between mb-10 w-full">
             <input
-                class="border border-gray-300 rounded-lg py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out placeholder-gray-500 mr-20"
+                class="border border-gray-300 rounded-lg py-2 px-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 ease-in-out placeholder-gray-500 mr-10"
                 type="text" v-model="newItem" placeholder="Add an item" @keyup.enter="saveItem">
+            <p class="mr-10"> {{ characterCount }} /200 </p>
             <button :class="{
                 'bg-blue-300 hover:bg-blue-400 text-white': newItem.length > 0,
                 'bg-gray-300 text-gray-500 cursor-not-allowed': newItem.length === 0
@@ -36,7 +37,9 @@
         </div>
 
         <ul class="list-disc list-inside space-y-2">
-            <li v-for="item in items"> {{ item }}</li>
+            <li v-for="item in reversedItems" class="cursor-pointer"
+                :class="{ 'line-through text-gray-500': item.purchased }" @click="togglePurchased(item)"> {{ item.label
+                }}</li>
         </ul>
         <p v-if="items.length === 0" class="text-center text-gray-500 text-lg font-semibold mt-4">Nice job ! You've
             bought all your items.</p>
@@ -50,19 +53,42 @@
                 header: 'Shopping list app',
                 newItem: '',
                 items: [
-                    // '10 party hats',
-                    // '2 board games',
-                    // '20 cups',
+                    {
+                        label: '10 party hats',
+                        purchased: false,
+                    },
+                    {
+                        label: '2 board games',
+                        purchased: true,
+                    },
+                    {
+                        label: '20 cups',
+                        purchased: false,
+                    },
                 ]
+            },
+            computed: {
+                characterCount() {
+                    return this.newItem.length;
+                },
+                reversedItems() {
+                    return this.items.slice(0).reverse();
+                }
             },
             methods: {
                 saveItem: function () {
-                    this.items.push(this.newItem);
+                    this.items.push({
+                        label: this.newItem,
+                        purshased: false,
+                    },);
                     this.newItem = '';
                 },
                 changeState: function (newState) {
                     this.state = newState;
                     this.newItem = '';
+                },
+                togglePurchased: function (item) {
+                    item.purchased = !item.purchased;
                 }
             }
         });
